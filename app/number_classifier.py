@@ -1,7 +1,6 @@
-from fastapi import HTTPException
-from typing import Union, Dict
-from utils import validate_input, format_response
+from typing import List, Dict, Union
 import math
+from fastapi import HTTPException
 import requests
 
 class NumberClassifier:
@@ -34,7 +33,7 @@ class NumberClassifier:
         """Calculate the sum of digits."""
         return sum(int(digit) for digit in str(abs(n)))  # Handle negatives
 
-    def get_properties(self, n: int) -> list:
+    def get_properties(self, n: int) -> List[str]:
         """Get all properties of a number."""
         properties = []
         
@@ -60,25 +59,24 @@ class NumberClassifier:
 
     async def classify_number(self, number: Union[str, int, float]) -> Dict:
         """Classify a number and return all its properties."""
-        # Validate the input using the utils function
-        is_valid, result = validate_input(str(number))  # Convert number to string for validation
+        try:
+            n = int(float(number))
+            properties = self.get_properties(n)
 
-        if not is_valid:
-            # If input is invalid, format the error response with number field as invalid input
-            return format_response({"number": result, "message": "Invalid input"}, status_code=400)
-
-        n = result  # After validation, `result` will be the valid number
-
-        # Generate properties and facts
-        properties = self.get_properties(n)
-        fun_fact = await self.get_fun_fact(n)
-
-        # Return the formatted successful response
-        return format_response({
-            "number": n,
-            "is_prime": self.is_prime(n),
-            "is_perfect": self.is_perfect(n),
-            "properties": properties,
-            "digit_sum": self.digit_sum(n),
-            "fun_fact": fun_fact
-        })
+            return {
+                "number": n,
+                "is_prime": self.is_prime(n) if n >= 0 else False,
+                "is_perfect": self.is_perfect(n) if n >= 0 else False,
+                "properties": properties,
+                "digit_sum": self.digit_sum(n),
+                "fun_fact": await self.get_fun_fact(n)
+            }
+        except (ValueError, TypeError):
+            raise HTTPException(
+                status_code=400, 
+                detail={
+                    "number": str(number),  # Include the invalid input
+                    "error": True,
+                    "message": "Invalid input. Must be a numeric value."
+                }
+            )
