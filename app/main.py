@@ -1,6 +1,7 @@
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from .number_classifier import NumberClassifier
+from .utils import validate_input, format_response
 
 app = FastAPI(title="Number Classification API")
 
@@ -17,21 +18,13 @@ classifier = NumberClassifier()
 
 @app.get("/api/classify-number")
 async def classify_number(number: str):
-    try:
-        # Convert to float, then truncate to integer
-        n = float(number)
-        n = int(n)
-    except (ValueError, TypeError):
-        # Raise HTTPException with status code 400 for invalid input, including the invalid number
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "number": str(number),  # Include the invalid input in the response
-                "error": True,
-                "message": "Invalid input. Please provide a numeric value."
-            }
-        )
+    # Validate the input using the validate_input function from utils
+    is_valid, result = validate_input(number)
     
-    # Classify the number
-    result = await classifier.classify_number(n)
+    if not is_valid:
+        # If input is invalid, format and return the error response with status code 400
+        return format_response({"number": result, "message": "Invalid input"}, status_code=400)
+    
+    # If input is valid, classify the number and return the result
+    result = await classifier.classify_number(result)
     return result

@@ -7,12 +7,13 @@ def validate_input(number: str) -> tuple[bool, Union[int, str]]:
             return False, "Number must be between -1000000 and 1000000"
         return True, num
     except ValueError:
-        return False, "Input must be a valid integer"
+        # Return the original input value (string) when validation fails
+        return False, number  # Pass the invalid input directly as a string
 
 def format_response(data: Dict[str, Any], status_code: int = 200) -> Dict[str, Any]:
     if status_code == 400:
         return {
-            "number": data.get("number", ""),
+            "number": data.get("number", ""),  # Return the invalid input in the response
             "error": True,
             "message": data.get("message", "Invalid input")
         }
