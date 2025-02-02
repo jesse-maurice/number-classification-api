@@ -24,10 +24,10 @@ async def classify_number(number: str):
         n = int(n)  # Truncate to integer
     except (ValueError, TypeError):
         # Return 400 for invalid input (non-numeric)
-        raise HTTPException(
-            status_code=400,
-            detail="Invalid input: must be a valid number"
-        )
+        return {
+            "number": number,  # Invalid input, return as string
+            "error": True
+        }
     
     # Classify the number
     result = await classifier.classify_number(n)
