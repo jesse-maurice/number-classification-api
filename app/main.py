@@ -22,15 +22,12 @@ async def classify_number(number: str):
         n = float(number)
         n = int(n)
     except (ValueError, TypeError):
-        # Return 400 Bad Request with invalid number in response
-        raise HTTPException(
-            status_code=400,
-            detail={
-                "number": number,  # Keep the invalid input in the response
-                "error": True,
-                "message": "Invalid input. Please provide a numeric value."
-            }
-        )
+        # Return a JSON response with the invalid number
+        return {
+            "number": number,  # Include the invalid input
+            "error": True,
+            "message": "Invalid input. Please provide a numeric value."
+        }
     
     # Classify the number
     result = await classifier.classify_number(n)
