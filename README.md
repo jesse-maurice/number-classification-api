@@ -73,7 +73,7 @@ pytest
 
 ## Deployment
 
-The API is deployed at: (http://18.134.206.25:8000/api/classify-number)
+The API is deployed at: http://18.134.206.25:8000/api/classify-number
 
 ## License
 
