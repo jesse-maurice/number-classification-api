@@ -16,6 +16,8 @@ app.add_middleware(
 
 classifier = NumberClassifier()
 
+from fastapi import FastAPI, HTTPException
+
 @app.get("/api/classify-number")
 async def classify_number(number: str):
     try:
