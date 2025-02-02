@@ -29,7 +29,7 @@ class NumberClassifier:
         power = len(num_str)
         return sum(int(digit) ** power for digit in num_str) == n
 
-    def digit_sum(self, n: int) -> int:
+    def class_sum(self, n: int) -> int:
         """Calculate the sum of digits."""
         return sum(int(digit) for digit in str(n))
 
@@ -70,7 +70,7 @@ class NumberClassifier:
                 "is_prime": self.is_prime(n),
                 "is_perfect": self.is_perfect(n),
                 "properties": properties,
-                "digit_sum": self.digit_sum(n),
+                "class_sum": self.class_sum(n),
                 "fun_fact": await self.get_fun_fact(n)
             }
         except ValueError:
