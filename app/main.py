@@ -20,5 +20,5 @@ classifier = NumberClassifier()
 async def classify_number(number: str):
     result = await classifier.classify_number(number)
     if "error" in result:
-        return result, 400
+        raise HTTPException(status_code=400, detail=result)
     return result

@@ -9,7 +9,7 @@ class NumberClassifier:
 
     def is_prime(self, n: int) -> bool:
         """Check if a number is prime."""
-        if n <= 1:  # Handle negative numbers and 1
+        if n <= 1:
             return False
         for i in range(2, int(math.sqrt(abs(n))) + 1):
             if abs(n) % i == 0:
@@ -18,16 +18,18 @@ class NumberClassifier:
 
     def is_perfect(self, n: int) -> bool:
         """Check if a number is perfect."""
-        if n <= 1:  # Handle negative numbers and 1
+        if n <= 1:
             return False
         sum_divisors = sum(i for i in range(1, abs(n)) if abs(n) % i == 0)
         return sum_divisors == abs(n)
 
     def is_armstrong(self, n: int) -> bool:
         """Check if a number is an Armstrong number."""
-        num_str = str(abs(n))  # Handle negative numbers
+        if n < 0:  # Armstrong numbers are positive
+            return False
+        num_str = str(n)
         power = len(num_str)
-        return sum(int(digit) ** power for digit in num_str) == abs(n)
+        return sum(int(digit) ** power for digit in num_str) == n
 
     def digit_sum(self, n: int) -> int:
         """Calculate the sum of digits."""
@@ -37,13 +39,16 @@ class NumberClassifier:
         """Get all properties of a number."""
         properties = []
         
-        # Check Armstrong (only for positive numbers)
-        if n > 0 and self.is_armstrong(n):
+        # Check Armstrong number (only for positive numbers)
+        if self.is_armstrong(n):
             properties.append("armstrong")
-        
-        # Check odd/even
-        properties.append("odd" if abs(n) % 2 else "even")
-        
+            
+        # Add odd/even (this should be the ONLY property if not armstrong)
+        if n % 2 == 0:
+            properties.append("even")
+        else:
+            properties.append("odd")
+            
         return properties
 
     async def get_fun_fact(self, n: int) -> str:
@@ -54,9 +59,9 @@ class NumberClassifier:
                 return response.text
         except:
             pass
-        
+
         # Fallback fun facts
-        if n > 0 and self.is_armstrong(n):
+        if self.is_armstrong(n):
             digits = str(n)
             calc = " + ".join(f"{d}^{len(digits)}" for d in digits)
             return f"{n} is an Armstrong number because {calc} = {n}"
