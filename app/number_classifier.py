@@ -75,7 +75,7 @@ class NumberClassifier:
             raise HTTPException(
                 status_code=400, 
                 detail={
-                    "number": number,  # Include the invalid input
+                    "number": str(number),  # Include the invalid input
                     "error": True,
                     "message": "Invalid input. Must be a numeric value."
                 }
