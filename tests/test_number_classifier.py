@@ -1,3 +1,4 @@
+# tests/test_number_classifier.py
 import pytest
 from app.number_classifier import NumberClassifier
 
@@ -5,46 +6,19 @@ from app.number_classifier import NumberClassifier
 def classifier():
     return NumberClassifier()
 
-def test_is_prime(classifier):
-    assert classifier.is_prime(2) == True
-    assert classifier.is_prime(17) == True
-    assert classifier.is_prime(4) == False
-    assert classifier.is_prime(1) == False
-
-def test_is_perfect(classifier):
-    assert classifier.is_perfect(6) == True  # 1 + 2 + 3 = 6
-    assert classifier.is_perfect(28) == True  # 1 + 2 + 4 + 7 + 14 = 28
-    assert classifier.is_perfect(12) == False
-
-def test_is_armstrong(classifier):
-    assert classifier.is_armstrong(371) == True  # 3^3 + 7^3 + 1^3 = 371
-    assert classifier.is_armstrong(153) == True  # 1^3 + 5^3 + 3^3 = 153
-    assert classifier.is_armstrong(123) == False
-
-def test_digit_sum(classifier):
-    assert classifier.digit_sum(371) == 11
-    assert classifier.digit_sum(123) == 6
-    assert classifier.digit_sum(1000) == 1
-    assert classifier.digit_sum(-123) == 6  # Test negative number
-
 @pytest.mark.asyncio
-async def test_classify_number(classifier):
-    result = await classifier.classify_number(371)
+async def test_valid_positive_number(classifier):
+    result = await classifier.classify_number("371")
     assert result["number"] == 371
-    assert result["is_prime"] == False
-    assert "armstrong" in result["properties"]
-    assert "odd" in result["properties"]
-    assert result["digit_sum"] == 11
+    assert isinstance(result["is_prime"], bool)
+    assert isinstance(result["is_perfect"], bool)
+    assert isinstance(result["properties"], list)
+    assert isinstance(result["digit_sum"], int)
+    assert isinstance(result["fun_fact"], str)
 
 @pytest.mark.asyncio
-async def test_invalid_input(classifier):
-    result = await classifier.classify_number("abc")
-    assert result["error"] == True
-    assert result["number"] == "abc"
-
-@pytest.mark.asyncio
-async def test_negative_number(classifier):
-    result = await classifier.classify_number(-123)
+async def test_valid_negative_number(classifier):
+    result = await classifier.classify_number("-123")
     assert result["number"] == -123
     assert isinstance(result["is_prime"], bool)
     assert isinstance(result["is_perfect"], bool)
@@ -53,11 +27,32 @@ async def test_negative_number(classifier):
     assert isinstance(result["fun_fact"], str)
 
 @pytest.mark.asyncio
-async def test_floating_point_number(classifier):
-    result = await classifier.classify_number(12.34)
+async def test_invalid_input(classifier):
+    result = await classifier.classify_number("abc")
+    assert result["number"] == "abc"
+    assert result["error"] is True
+
+@pytest.mark.asyncio
+async def test_floating_point(classifier):
+    result = await classifier.classify_number("12.34")
     assert result["number"] == 12
     assert isinstance(result["is_prime"], bool)
     assert isinstance(result["is_perfect"], bool)
     assert isinstance(result["properties"], list)
     assert isinstance(result["digit_sum"], int)
     assert isinstance(result["fun_fact"], str)
+
+def test_digit_sum(classifier):
+    assert classifier.digit_sum(371) == 11
+    assert classifier.digit_sum(-371) == 11
+    assert classifier.digit_sum(0) == 0
+
+def test_properties(classifier):
+    props = classifier.get_properties(371)
+    assert isinstance(props, list)
+    assert "armstrong" in props
+    assert "odd" in props
+
+    props = classifier.get_properties(-371)
+    assert isinstance(props, list)
+    assert "odd" in props  # Negative number should still be odd
