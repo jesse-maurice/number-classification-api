@@ -74,15 +74,15 @@ class NumberClassifier:
             properties = self.get_properties(n)
             
             return {
-                "number": n,
-                "is_prime": self.is_prime(n),
-                "is_perfect": self.is_perfect(n),
-                "properties": properties,
-                "digit_sum": self.digit_sum(n),
-                "fun_fact": await self.get_fun_fact(n)
+                "number": n,  # Ensure `number` is numeric
+                "is_prime": self.is_prime(n),  # Boolean
+                "is_perfect": self.is_perfect(n),  # Boolean
+                "properties": properties,  # Array
+                "digit_sum": self.digit_sum(n),  # Numeric
+                "fun_fact": await self.get_fun_fact(n)  # String
             }
         except (ValueError, TypeError):
             return {
-                "number": str(number),
+                "number": str(number),  # Invalid input, return as string
                 "error": True
             }

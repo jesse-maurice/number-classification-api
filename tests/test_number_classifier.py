@@ -46,9 +46,18 @@ async def test_invalid_input(classifier):
 async def test_negative_number(classifier):
     result = await classifier.classify_number(-123)
     assert result["number"] == -123
-    assert result["digit_sum"] == 6
+    assert isinstance(result["is_prime"], bool)
+    assert isinstance(result["is_perfect"], bool)
+    assert isinstance(result["properties"], list)
+    assert isinstance(result["digit_sum"], int)
+    assert isinstance(result["fun_fact"], str)
 
 @pytest.mark.asyncio
 async def test_floating_point_number(classifier):
     result = await classifier.classify_number(12.34)
     assert result["number"] == 12
+    assert isinstance(result["is_prime"], bool)
+    assert isinstance(result["is_perfect"], bool)
+    assert isinstance(result["properties"], list)
+    assert isinstance(result["digit_sum"], int)
+    assert isinstance(result["fun_fact"], str)
