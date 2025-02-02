@@ -43,7 +43,7 @@ GET /api/classify-number?number=<number>
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/number-classification-api.git
+git clone https://github.com/jesse-maurice/number-classification-api
 cd number-classification-api
 ```
 
@@ -73,7 +73,7 @@ pytest
 
 ## Deployment
 
-The API is deployed at: [Your deployment URL]
+The API is deployed at: (http://18.134.206.25:8000/api/classify-number)
 
 ## License
 

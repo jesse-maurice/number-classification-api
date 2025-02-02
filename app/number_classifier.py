@@ -1,4 +1,3 @@
-# app/number_classifier.py
 from typing import List, Dict, Union
 from .utils import validate_input, format_response
 import math
