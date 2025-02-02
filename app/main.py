@@ -18,7 +18,17 @@ classifier = NumberClassifier()
 
 @app.get("/api/classify-number")
 async def classify_number(number: str):
-    result = await classifier.classify_number(number)
-    if "error" in result:
-        raise HTTPException(status_code=400, detail=result)
+    try:
+        # Attempt to convert the input to a float first, then to an integer
+        n = float(number)
+        n = int(n)  # Truncate to integer
+    except (ValueError, TypeError):
+        # Return 400 for invalid input (non-numeric)
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid input: must be a valid number"
+        )
+    
+    # Classify the number
+    result = await classifier.classify_number(n)
     return result

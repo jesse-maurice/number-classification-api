@@ -1,4 +1,3 @@
-# app/number_classifier.py
 from typing import List, Dict, Union
 import math
 import requests
@@ -9,78 +8,81 @@ class NumberClassifier:
 
     def is_prime(self, n: int) -> bool:
         """Check if a number is prime."""
-        if n <= 1:
+        if n < 2:
             return False
-        for i in range(2, int(math.sqrt(abs(n))) + 1):
-            if abs(n) % i == 0:
+        for i in range(2, int(math.sqrt(n)) + 1):
+            if n % i == 0:
                 return False
         return True
 
     def is_perfect(self, n: int) -> bool:
         """Check if a number is perfect."""
-        if n <= 1:
+        if n < 1:
             return False
-        sum_divisors = sum(i for i in range(1, abs(n)) if abs(n) % i == 0)
-        return sum_divisors == abs(n)
+        sum_divisors = sum(i for i in range(1, n) if n % i == 0)
+        return sum_divisors == n
 
     def is_armstrong(self, n: int) -> bool:
         """Check if a number is an Armstrong number."""
-        if n < 0:  # Armstrong numbers are positive
-            return False
         num_str = str(n)
         power = len(num_str)
         return sum(int(digit) ** power for digit in num_str) == n
 
     def digit_sum(self, n: int) -> int:
         """Calculate the sum of digits."""
-        return sum(int(digit) for digit in str(abs(n)))
+        return sum(int(digit) for digit in str(abs(n)))  # Handle negative numbers
 
     def get_properties(self, n: int) -> List[str]:
         """Get all properties of a number."""
         properties = []
         
-        # Check Armstrong number (only for positive numbers)
+        # Check if the number is prime
+        if self.is_prime(n):
+            properties.append("prime")
+        
+        # Check if the number is perfect
+        if self.is_perfect(n):
+            properties.append("perfect")
+        
+        # Check if the number is an Armstrong number
         if self.is_armstrong(n):
             properties.append("armstrong")
-            
-        # Add odd/even (this should be the ONLY property if not armstrong)
-        if n % 2 == 0:
-            properties.append("even")
-        else:
-            properties.append("odd")
-            
+        
+        # Check if the number is odd or even
+        properties.append("odd" if n % 2 else "even")
+        
         return properties
 
     async def get_fun_fact(self, n: int) -> str:
         """Get a fun fact about the number."""
         try:
-            response = requests.get(f"{self.numbers_api_url}{abs(n)}/math")
-            if response.status_code == 200:
-                return response.text
+            response = requests.get(f"{self.numbers_api_url}{n}/math")
+            return response.text
         except:
-            pass
-
-        # Fallback fun facts
-        if self.is_armstrong(n):
-            digits = str(n)
-            calc = " + ".join(f"{d}^{len(digits)}" for d in digits)
-            return f"{n} is an Armstrong number because {calc} = {n}"
-        return f"The number {n} is {'even' if n % 2 == 0 else 'odd'}"
+            # Fallback fun fact if API is unavailable
+            if self.is_armstrong(n):
+                digits = str(n)
+                calc = " + ".join(f"{d}^{len(digits)}" for d in digits)
+                return f"{n} is an Armstrong number because {calc} = {n}"
+            return f"The number {n} is {'even' if n % 2 == 0 else 'odd'}"
 
     async def classify_number(self, number: Union[str, int, float]) -> Dict:
         """Classify a number and return all its properties."""
         try:
+            # Handle floating-point numbers by truncating to integer
             n = int(float(number))
+            properties = self.get_properties(n)
+            
             return {
-                "number": n,
-                "is_prime": self.is_prime(n),
-                "is_perfect": self.is_perfect(n),
-                "properties": self.get_properties(n),
-                "digit_sum": self.digit_sum(n),
-                "fun_fact": await self.get_fun_fact(n)
+                "number": n,  # Ensure `number` is numeric
+                "is_prime": self.is_prime(n),  # Boolean
+                "is_perfect": self.is_perfect(n),  # Boolean
+                "properties": properties,  # Array
+                "digit_sum": self.digit_sum(n),  # Numeric
+                "fun_fact": await self.get_fun_fact(n)  # String
             }
         except (ValueError, TypeError):
             return {
-                "number": str(number),
+                "number": str(number),  # Invalid input, return as string
                 "error": True
             }
