@@ -40,6 +40,7 @@ async def test_classify_number(classifier):
 async def test_invalid_input(classifier):
     result = await classifier.classify_number("abc")
     assert result["error"] == True
+    assert result["number"] == "abc"
 
 @pytest.mark.asyncio
 async def test_negative_number(classifier):

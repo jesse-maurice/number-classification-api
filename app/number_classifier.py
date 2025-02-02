@@ -1,5 +1,4 @@
 from typing import List, Dict, Union
-from .utils import validate_input, format_response
 import math
 import requests
 
@@ -37,11 +36,19 @@ class NumberClassifier:
         """Get all properties of a number."""
         properties = []
         
-        # Check Armstrong
+        # Check if the number is prime
+        if self.is_prime(n):
+            properties.append("prime")
+        
+        # Check if the number is perfect
+        if self.is_perfect(n):
+            properties.append("perfect")
+        
+        # Check if the number is an Armstrong number
         if self.is_armstrong(n):
             properties.append("armstrong")
         
-        # Check odd/even
+        # Check if the number is odd or even
         properties.append("odd" if n % 2 else "even")
         
         return properties
