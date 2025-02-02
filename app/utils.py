@@ -22,7 +22,7 @@ def format_response(data: Dict[str, Any], status_code: int = 200) -> Dict[str, A
         "is_prime": data["is_prime"],
         "is_perfect": data["is_perfect"],
         "properties": data["properties"],
-        "class_sum": data["class_sum"],
+        "digit_sum": data["digit_sum"],
         "fun_fact": data["fun_fact"]
     }
 

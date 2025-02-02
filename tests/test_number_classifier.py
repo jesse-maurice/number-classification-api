@@ -21,10 +21,11 @@ def test_is_armstrong(classifier):
     assert classifier.is_armstrong(153) == True  # 1^3 + 5^3 + 3^3 = 153
     assert classifier.is_armstrong(123) == False
 
-def test_class_sum(classifier):
-    assert classifier.class_sum(371) == 11
-    assert classifier.class_sum(123) == 6
-    assert classifier.class_sum(1000) == 1
+def test_digit_sum(classifier):
+    assert classifier.digit_sum(371) == 11
+    assert classifier.digit_sum(123) == 6
+    assert classifier.digit_sum(1000) == 1
+    assert classifier.digit_sum(-123) == 6  # Test negative number
 
 @pytest.mark.asyncio
 async def test_classify_number(classifier):
@@ -33,9 +34,20 @@ async def test_classify_number(classifier):
     assert result["is_prime"] == False
     assert "armstrong" in result["properties"]
     assert "odd" in result["properties"]
-    assert result["class_sum"] == 11
+    assert result["digit_sum"] == 11
 
 @pytest.mark.asyncio
 async def test_invalid_input(classifier):
     result = await classifier.classify_number("abc")
     assert result["error"] == True
+
+@pytest.mark.asyncio
+async def test_negative_number(classifier):
+    result = await classifier.classify_number(-123)
+    assert result["number"] == -123
+    assert result["digit_sum"] == 6
+
+@pytest.mark.asyncio
+async def test_floating_point_number(classifier):
+    result = await classifier.classify_number(12.34)
+    assert result["number"] == 12

@@ -29,9 +29,9 @@ class NumberClassifier:
         power = len(num_str)
         return sum(int(digit) ** power for digit in num_str) == n
 
-    def class_sum(self, n: int) -> int:
+    def digit_sum(self, n: int) -> int:
         """Calculate the sum of digits."""
-        return sum(int(digit) for digit in str(n))
+        return sum(int(digit) for digit in str(abs(n)))  # Handle negative numbers
 
     def get_properties(self, n: int) -> List[str]:
         """Get all properties of a number."""
@@ -59,10 +59,11 @@ class NumberClassifier:
                 return f"{n} is an Armstrong number because {calc} = {n}"
             return f"The number {n} is {'even' if n % 2 == 0 else 'odd'}"
 
-    async def classify_number(self, number: Union[str, int]) -> Dict:
+    async def classify_number(self, number: Union[str, int, float]) -> Dict:
         """Classify a number and return all its properties."""
         try:
-            n = int(number)
+            # Handle floating-point numbers by truncating to integer
+            n = int(float(number))
             properties = self.get_properties(n)
             
             return {
@@ -70,10 +71,10 @@ class NumberClassifier:
                 "is_prime": self.is_prime(n),
                 "is_perfect": self.is_perfect(n),
                 "properties": properties,
-                "class_sum": self.class_sum(n),
+                "digit_sum": self.digit_sum(n),
                 "fun_fact": await self.get_fun_fact(n)
             }
-        except ValueError:
+        except (ValueError, TypeError):
             return {
                 "number": str(number),
                 "error": True
