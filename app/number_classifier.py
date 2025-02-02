@@ -72,8 +72,11 @@ class NumberClassifier:
                 "fun_fact": await self.get_fun_fact(n)
             }
         except (ValueError, TypeError):
-            raise HTTPException(status_code=400, detail={
-                "number": number,  # Include the invalid input
-                "error": True,
-                "message": "Invalid input. Please provide a numeric value."
-            })
+            raise HTTPException(
+                status_code=400, 
+                detail={
+                    "number": number,  # Include the invalid input
+                    "error": True,
+                    "message": "Invalid input. Must be a numeric value."
+                }
+            )

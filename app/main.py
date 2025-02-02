@@ -26,7 +26,7 @@ async def classify_number(number: str):
         raise HTTPException(
             status_code=400,
             detail={
-                "number": number,  # Include the invalid input
+                "number": number,  # Include the invalid input in the response
                 "error": True,
                 "message": "Invalid input. Please provide a numeric value."
             }
