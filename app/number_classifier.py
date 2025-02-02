@@ -1,5 +1,6 @@
 from typing import List, Dict, Union
 import math
+from fastapi import HTTPException
 import requests
 
 class NumberClassifier:
@@ -24,31 +25,26 @@ class NumberClassifier:
 
     def is_armstrong(self, n: int) -> bool:
         """Check if a number is an Armstrong number."""
-        num_str = str(n)
+        num_str = str(abs(n))  # Handle negative numbers
         power = len(num_str)
-        return sum(int(digit) ** power for digit in num_str) == n
+        return sum(int(digit) ** power for digit in num_str) == abs(n)
 
     def digit_sum(self, n: int) -> int:
         """Calculate the sum of digits."""
-        return sum(int(digit) for digit in str(abs(n)))  # Handle negative numbers
+        return sum(int(digit) for digit in str(abs(n)))  # Handle negatives
 
     def get_properties(self, n: int) -> List[str]:
         """Get all properties of a number."""
         properties = []
         
-        # Check if the number is prime
-        if self.is_prime(n):
-            properties.append("prime")
-        
-        # Check if the number is perfect
-        if self.is_perfect(n):
-            properties.append("perfect")
-        
-        # Check if the number is an Armstrong number
-        if self.is_armstrong(n):
-            properties.append("armstrong")
-        
-        # Check if the number is odd or even
+        if n >= 0:  # Exclude negative numbers from these checks
+            if self.is_prime(n):
+                properties.append("prime")
+            if self.is_perfect(n):
+                properties.append("perfect")
+            if self.is_armstrong(n):
+                properties.append("armstrong")
+
         properties.append("odd" if n % 2 else "even")
         
         return properties
@@ -59,30 +55,21 @@ class NumberClassifier:
             response = requests.get(f"{self.numbers_api_url}{n}/math")
             return response.text
         except:
-            # Fallback fun fact if API is unavailable
-            if self.is_armstrong(n):
-                digits = str(n)
-                calc = " + ".join(f"{d}^{len(digits)}" for d in digits)
-                return f"{n} is an Armstrong number because {calc} = {n}"
-            return f"The number {n} is {'even' if n % 2 == 0 else 'odd'}"
+            return f"{n} is {'even' if n % 2 == 0 else 'odd'}."
 
     async def classify_number(self, number: Union[str, int, float]) -> Dict:
         """Classify a number and return all its properties."""
         try:
-            # Handle floating-point numbers by truncating to integer
             n = int(float(number))
             properties = self.get_properties(n)
-            
+
             return {
-                "number": n,  # Ensure `number` is numeric
-                "is_prime": self.is_prime(n),  # Boolean
-                "is_perfect": self.is_perfect(n),  # Boolean
-                "properties": properties,  # Array
-                "digit_sum": self.digit_sum(n),  # Numeric
-                "fun_fact": await self.get_fun_fact(n)  # String
+                "number": n,
+                "is_prime": self.is_prime(n) if n >= 0 else False,
+                "is_perfect": self.is_perfect(n) if n >= 0 else False,
+                "properties": properties,
+                "digit_sum": self.digit_sum(n),
+                "fun_fact": await self.get_fun_fact(n)
             }
         except (ValueError, TypeError):
-            return {
-                "number": str(number),  # Invalid input, return as string
-                "error": True
-            }
+            raise HTTPException(status_code=400, detail="Invalid input. Must be a numeric value.")
