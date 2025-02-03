@@ -24,12 +24,17 @@ async def classify_number(number: str):
         n = int(n)
     except (ValueError, TypeError):
         # Raise HTTPException with status code 400 for invalid input, including the invalid number
+        if number.isalpha():  # Check if input is alphabetic
+            input_type = "alphabet"
+        else:
+            input_type = "unknown"  # Fallback for other invalid types (e.g., special characters)
+
+
         raise HTTPException(
             status_code=400,
             detail={
-                "number": str(number),  # Include the invalid input in the response
+                "number": input_type,  # Include the invalid input in the response
                 "error": True,
-                "message": "Invalid input. Please provide a numeric value."
             }
         )
     
