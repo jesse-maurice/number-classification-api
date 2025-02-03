@@ -1,6 +1,6 @@
 from typing import List, Dict, Union
 import math
-from fastapi import HTTPException
+from fastapi.responses import JSONResponse
 import requests
 
 class NumberClassifier:
@@ -72,10 +72,10 @@ class NumberClassifier:
                 "fun_fact": await self.get_fun_fact(n)
             }
         except (ValueError, TypeError):
-            raise HTTPException(
-                status_code=400, 
-                detail={
-                    "number": number,  # Include the invalid input
-                    "error": True,
-                }
-            )
+            return JSONResponse(
+            status_code=400,
+            content={
+                "number": number,  # Return the invalid input directly
+                "error": True
+            }
+        )

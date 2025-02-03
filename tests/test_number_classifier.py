@@ -1,4 +1,3 @@
-from fastapi import HTTPException
 import pytest
 from app.number_classifier import NumberClassifier
 
@@ -39,10 +38,9 @@ async def test_classify_number(classifier):
 
 @pytest.mark.asyncio
 async def test_invalid_input(classifier):
-    with pytest.raises(HTTPException) as excinfo:
-        await classifier.classify_number("abc")
-    assert excinfo.value.detail["error"] == True
-    assert excinfo.value.detail["number"] == "abc"
+    result = await classifier.classify_number("abc")
+    assert result["error"] == True
+    assert result["number"] == "abc"
 
 @pytest.mark.asyncio
 async def test_negative_number(classifier):

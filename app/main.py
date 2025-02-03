@@ -1,5 +1,6 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 from .number_classifier import NumberClassifier
 
 app = FastAPI(title="Number Classification API")
@@ -23,9 +24,9 @@ async def classify_number(number: str):
         n = int(n)
     except (ValueError, TypeError):
         # Raise an HTTPException with status code 400 for invalid input, include the invalid input
-        raise HTTPException(
+        return JSONResponse(
             status_code=400,
-            detail={
+            content={
                 "number": number,  # Return the invalid input directly
                 "error": True
             }
