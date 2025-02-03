@@ -77,6 +77,5 @@ class NumberClassifier:
                 detail={
                     "number": number,  # Include the invalid input
                     "error": True,
-                    "message": "Invalid input. Must be a numeric value."
                 }
             )
